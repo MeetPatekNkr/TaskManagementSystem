@@ -1,0 +1,204 @@
+@model List<TaskManager.Models.TaskItem>
+@{
+    ViewData["Title"] = "Project Tasks";
+    var projectId = ViewBag.ProjectId;
+    var projectName = ViewBag.ProjectName;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>
+        <i class="fas fa-tasks me-2"></i>Tasks
+        @if (!string.IsNullOrEmpty(projectName))
+        {
+            <small class="text-muted">- @projectName</small>
+        }
+    </h1>
+    <div>
+        <a asp-action="Create" asp-route-projectId="@projectId" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i>New Task
+        </a>
+        <a asp-controller="Projects" asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back to Projects
+        </a>
+    </div>
+</div>
+
+<!-- Task Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-3">
+                <select class="form-select" id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="ToDo">To Do</option>
+                    <option value="InProgress">In Progress</option>
+                    <option value="Review">Review</option>
+                    <option value="Done">Done</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="priorityFilter">
+                    <option value="">All Priority</option>
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                    <option value="Critical">Critical</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.Any())
+{
+    <div class="row" id="tasksContainer">
+        @foreach (var task in Model)
+        {
+            <div class="col-lg-6 mb-4 task-item" data-status="@task.Status" data-priority="@task.Priority">
+                <div class="card h-100 border-@GetPriorityColor(task.Priority)">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">@task.Title</h5>
+                        <span class="badge bg-@GetPriorityColor(task.Priority)">@task.Priority</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">@(task.Description.Length > 150 ? task.Description.Substring(0, 150) + "..." : task.Description)</p>
+                        
+                        <div class="mb-3">
+                            <small class="text-muted">
+                                <i class="fas fa-user me-1"></i>
+                                Assigned to: <strong>@(task.AssignedTo != null ? $"{task.AssignedTo.FirstName} {task.AssignedTo.LastName}" : "Unassigned")</strong>
+                            </small>
+                        </div>
+
+                        <div class="d-flex justify-content-between text-muted small mb-3">
+                            <span>
+                                <i class="fas fa-calendar me-1"></i>
+                                @(task.DueDate?.ToString("MMM dd, yyyy") ?? "No due date")
+                            </span>
+                            <span>
+                                <i class="fas fa-clock me-1"></i>
+                                @task.CreatedAt.ToString("MMM dd, yyyy")
+                            </span>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <select class="form-select form-select-sm status-select" style="width: auto;" data-task-id="@task.Id">
+                                <option value="ToDo" selected="@(task.Status == TaskItemStatus.ToDo)">To Do</option>
+                                <option value="InProgress" selected="@(task.Status == TaskItemStatus.InProgress)">In Progress</option>
+                                <option value="Review" selected="@(task.Status == TaskItemStatus.Review)">Review</option>
+                                <option value="Done" selected="@(task.Status == TaskItemStatus.Done)">Done</option>
+                            </select>
+                            
+                            <div class="btn-group">
+                                <a asp-action="Details" asp-route-id="@task.Id" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <i class="fas fa-tasks fa-4x text-muted mb-3"></i>
+        <h3>No Tasks Yet</h3>
+        <p class="text-muted">Get started by creating your first task for this project!</p>
+        <a asp-action="Create" asp-route-projectId="@projectId" class="btn btn-primary btn-lg">
+            <i class="fas fa-plus me-2"></i>Create First Task
+        </a>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Status filter
+            $('#statusFilter').change(function () {
+                filterTasks();
+            });
+
+            // Priority filter
+            $('#priorityFilter').change(function () {
+                filterTasks();
+            });
+
+            // Status update
+            $('.status-select').change(function () {
+                const taskId = $(this).data('task-id');
+                const newStatus = $(this).val();
+
+                $.post('@Url.Action("UpdateStatus", "Tasks")', {
+                    id: taskId,
+                    status: newStatus
+                })
+                .done(function (response) {
+                    if (response.success) {
+                        // Update the card border based on status
+                        const card = $(this).closest('.card');
+                        card.removeClass('border-primary border-warning border-info border-success');
+                        
+                        switch (newStatus) {
+                            case 'ToDo':
+                                card.addClass('border-primary');
+                                break;
+                            case 'InProgress':
+                                card.addClass('border-warning');
+                                break;
+                            case 'Review':
+                                card.addClass('border-info');
+                                break;
+                            case 'Done':
+                                card.addClass('border-success');
+                                break;
+                        }
+                    } else {
+                        alert('Error: ' + response.message);
+                        // Revert selection
+                        location.reload();
+                    }
+                }.bind(this))
+                .fail(function () {
+                    alert('Error updating status. Please try again.');
+                    location.reload();
+                });
+            });
+
+            function filterTasks() {
+                const statusFilter = $('#statusFilter').val();
+                const priorityFilter = $('#priorityFilter').val();
+
+                $('.task-item').each(function () {
+                    const status = $(this).data('status');
+                    const priority = $(this).data('priority');
+
+                    const statusMatch = !statusFilter || status === statusFilter;
+                    const priorityMatch = !priorityFilter || priority === priorityFilter;
+
+                    if (statusMatch && priorityMatch) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            }
+        });
+    </script>
+}
+
+@functions {
+    public string GetPriorityColor(TaskPriority priority)
+    {
+        return priority switch
+        {
+            TaskPriority.Low => "success",
+            TaskPriority.Medium => "info",
+            TaskPriority.High => "warning",
+            TaskPriority.Critical => "danger",
+            _ => "secondary"
+        };
+    }
+}

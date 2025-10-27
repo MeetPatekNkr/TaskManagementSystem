@@ -1,0 +1,10 @@
+C:\Users\Meet Patel\OneDrive\Desktop\TaskManagementSystem\TaskManager\obj\Debug\net8.0\TaskManager.csproj.AssemblyReference.cache
+C:\Users\Meet Patel\OneDrive\Desktop\TaskManagementSystem\TaskManager\obj\Debug\net8.0\rpswa.dswa.cache.json
+C:\Users\Meet Patel\OneDrive\Desktop\TaskManagementSystem\TaskManager\obj\Debug\net8.0\TaskManager.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Meet Patel\OneDrive\Desktop\TaskManagementSystem\TaskManager\obj\Debug\net8.0\TaskManager.AssemblyInfoInputs.cache
+C:\Users\Meet Patel\OneDrive\Desktop\TaskManagementSystem\TaskManager\obj\Debug\net8.0\TaskManager.AssemblyInfo.cs
+C:\Users\Meet Patel\OneDrive\Desktop\TaskManagementSystem\TaskManager\obj\Debug\net8.0\TaskManager.csproj.CoreCompileInputs.cache
+C:\Users\Meet Patel\OneDrive\Desktop\TaskManagementSystem\TaskManager\obj\Debug\net8.0\TaskManager.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\Meet Patel\OneDrive\Desktop\TaskManagementSystem\TaskManager\obj\Debug\net8.0\TaskManager.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Meet Patel\OneDrive\Desktop\TaskManagementSystem\TaskManager\obj\Debug\net8.0\TaskManager.RazorAssemblyInfo.cache
+C:\Users\Meet Patel\OneDrive\Desktop\TaskManagementSystem\TaskManager\obj\Debug\net8.0\TaskManager.RazorAssemblyInfo.cs

@@ -1,0 +1,22 @@
+@{
+    ViewData["Title"] = "Invalid Invitation";
+}
+
+<div class="container text-center py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body py-5">
+                    <i class="fas fa-exclamation-circle text-danger fa-5x mb-4"></i>
+                    <h2 class="card-title">Invalid Invitation</h2>
+                    <p class="card-text">@ViewBag.ErrorMessage</p>
+                    <div class="mt-4">
+                        <a asp-controller="Projects" asp-action="Index" class="btn btn-primary">
+                            <i class="fas fa-home me-2"></i>Go Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
